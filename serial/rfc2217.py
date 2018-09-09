@@ -330,11 +330,15 @@ class TelnetSubnegotiation(object):
         the client needs to know if the change is performed he has to check the
         state of this object.
         """
-        self.value = value
-        self.state = REQUESTED
-        self.connection.rfc2217_send_subnegotiation(self.option, self.value)
-        if self.connection.logger:
-            self.connection.logger.debug("SB Requesting {} -> {!r}".format(self.name, self.value))
+        if value != self.value:
+            self.value = value
+            self.state = REQUESTED
+            self.connection.rfc2217_send_subnegotiation(self.option, self.value)
+            if self.connection.logger:
+                self.connection.logger.debug("SB Requesting {} -> {!r}".format(self.name, self.value))
+        else:
+            if self.connection.logger:
+                self.connection.logger.debug("SB Requesting {} -> {!r} (skipped)".format(self.name, self.value))
 
     def is_ready(self):
         """\
