@@ -15,7 +15,7 @@ import importlib
 from serial.serialutil import *
 #~ SerialBase, SerialException, to_bytes, iterbytes
 
-__version__ = '3.5'
+__version__ = '3.5.0.1'
 
 VERSION = __version__
 
