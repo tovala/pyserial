@@ -1,0 +1,74 @@
+
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = [
+    "setuptools>=47.2.0",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name="pyserial-labgrid"
+description="Python Serial Port Extension (with labgrid RFC2217 fixes)"
+authors = [
+    { name="Chris Liechti", email="cliechti@gmx.net" },
+    { name="Rouven Czerwinski", email="r.czerwinski@pengutronix.de" },
+]
+license = { text = "BSD" }
+readme= """\
+Python Serial Port Extension for Win32, OSX, Linux, BSD, Jython, IronPython
+
+Stable:
+
+- Documentation: http://pythonhosted.org/pyserial/
+- Download Page: https://pypi.python.org/pypi/pyserial
+
+Latest:
+
+- Documentation: http://pyserial.readthedocs.io/en/latest/
+- Project Homepage: https://github.com/pyserial/pyserial
+"""
+classifiers=[
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'Intended Audience :: End Users/Desktop',
+    'License :: OSI Approved :: BSD License',
+    'Natural Language :: English',
+    'Operating System :: POSIX',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: MacOS :: MacOS X',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Topic :: Communications',
+    'Topic :: Software Development :: Libraries',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Terminals :: Serial',
+]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "serial.__version__"}
+
+[project.urls]
+"Homepage" = "https://github.com/labgrid-project/pyserial-labgrid"
+"Bug Tracker" = "https://github.com/labgrid-project/labgrid/issues"
+
+[project.scripts]
+pyserial-miniterm = "serial.tools.miniterm:main"
+pyserial-ports = "serial.tools.list_ports:main"
+
+[project.optional-dependencies]
+cp2110 = ['hidapi']
+
+[tool.setuptools]
+packages = [
+    "serial",
+    "serial.threaded",
+    "serial.tools",
+    "serial.urlhandler",
+]
