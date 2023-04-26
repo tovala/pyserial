@@ -1,6 +1,6 @@
-=================================
- pySerial  |build-status| |docs|
-=================================
+================================================
+ pySerial (labgrid fork)  |build-status| |docs|
+================================================
 
 Overview
 ========
@@ -9,10 +9,20 @@ for Python_ running on Windows, OSX, Linux, BSD (possibly any POSIX compliant
 system) and IronPython. The module named "serial" automatically selects the
 appropriate backend.
 
-- Project Homepage: https://github.com/pyserial/pyserial
-- Download Page: https://pypi.python.org/pypi/pyserial
+This fork integrates RFC2217 relevant fixes which haven't been accepted
+upstream. We used to install from git, but newer pip enforces that all packages
+installed from pypi also have all dependencies on pypi. Therefore this is now a
+proper fork which:
+
+- converts to pyproject.toml
+- integrates rfc2217 fixes
+- will be available as pyserial-labgrid on pypi
+
+- Project Homepage: https://github.com/pyserial/pyserial-labgrid
+- Download Page: https://pypi.python.org/pypi/pyserial-labgrid
 
 BSD license, (C) 2001-2020 Chris Liechti <cliechti@gmx.net>
+BSD license, (C) 2023-2023 Rouven Czerwinski <entwicklung@pengutronix.de>
 
 
 Documentation
