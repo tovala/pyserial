@@ -16,40 +16,7 @@ authors = [
     { name="Rouven Czerwinski", email="r.czerwinski@pengutronix.de" },
 ]
 license = { text = "BSD" }
-readme= """\
-Python Serial Port Extension for Win32, OSX, Linux, BSD, Jython, IronPython
-
-Stable:
-
-- Documentation: http://pythonhosted.org/pyserial/
-- Download Page: https://pypi.python.org/pypi/pyserial
-
-Latest:
-
-- Documentation: http://pyserial.readthedocs.io/en/latest/
-- Project Homepage: https://github.com/pyserial/pyserial
-"""
-classifiers=[
-    'Development Status :: 5 - Production/Stable',
-    'Intended Audience :: Developers',
-    'Intended Audience :: End Users/Desktop',
-    'License :: OSI Approved :: BSD License',
-    'Natural Language :: English',
-    'Operating System :: POSIX',
-    'Operating System :: Microsoft :: Windows',
-    'Operating System :: MacOS :: MacOS X',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.4',
-    'Programming Language :: Python :: 3.5',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
-    'Topic :: Communications',
-    'Topic :: Software Development :: Libraries',
-    'Topic :: Software Development :: Libraries :: Python Modules',
-    'Topic :: Terminals :: Serial',
-]
+readme = "README.rst"
 dynamic = ["version"]
 
 [tool.setuptools_scm]
