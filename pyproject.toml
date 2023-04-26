@@ -4,6 +4,7 @@
 requires = [
     "setuptools>=47.2.0",
     "wheel",
+    "setuptools_scm[toml]",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -51,8 +52,8 @@ classifiers=[
 ]
 dynamic = ["version"]
 
-[tool.setuptools.dynamic]
-version = {attr = "serial.__version__"}
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
 
 [project.urls]
 "Homepage" = "https://github.com/labgrid-project/pyserial-labgrid"
