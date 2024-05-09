@@ -108,7 +108,7 @@ class TerminalSettingsDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.OnCancel, id=self.button_cancel.GetId())
 
     def OnOK(self, events):
-        """Update data wil new values and close dialog."""
+        """Update data with new values and close dialog."""
         self.settings.echo = self.checkbox_echo.GetValue()
         self.settings.unprintable = self.checkbox_unprintable.GetValue()
         self.settings.newline = self.radio_box_newline.GetSelection()
@@ -166,13 +166,13 @@ class TerminalFrame(wx.Frame):
         # end wxGlade
         self.__attach_events()          # register events
         self.OnPortSettings(None)       # call setup dialog on startup, opens port
-        if not self.alive.isSet():
+        if not self.alive.is_set():
             self.Close()
 
     def StartThread(self):
         """Start the receiver thread"""
         self.thread = threading.Thread(target=self.ComPortThread)
-        self.thread.setDaemon(1)
+        self.thread.daemon = True
         self.alive.set()
         self.thread.start()
         self.serial.rts = True
@@ -332,7 +332,7 @@ class TerminalFrame(wx.Frame):
         Thread that handles the incoming traffic. Does the basic input
         transformation (newlines) and generates an SerialRxEvent
         """
-        while self.alive.isSet():
+        while self.alive.is_set():
             b = self.serial.read(self.serial.in_waiting or 1)
             if b:
                 # newline transformation
