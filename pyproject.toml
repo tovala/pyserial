@@ -9,8 +9,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name="pyserial-labgrid"
-description="Python Serial Port Extension (with labgrid RFC2217 fixes)"
+name="pyserial"
+description="Python Serial Port Extension (Tovala via labgrid RFC2217 fixes)"
 authors = [
     { name="Chris Liechti", email="cliechti@gmx.net" },
     { name="Rouven Czerwinski", email="r.czerwinski@pengutronix.de" },
@@ -23,8 +23,8 @@ dynamic = ["version"]
 local_scheme = "no-local-version"
 
 [project.urls]
-"Homepage" = "https://github.com/labgrid-project/pyserial-labgrid"
-"Bug Tracker" = "https://github.com/labgrid-project/labgrid/issues"
+"Homepage" = "https://github.com/tovala/pyserial"
+"Bug Tracker" = "https://github.com/tovala/issues"
 
 [project.scripts]
 pyserial-miniterm = "serial.tools.miniterm:main"
