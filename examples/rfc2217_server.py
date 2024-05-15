@@ -15,6 +15,11 @@ import threading
 import serial
 import serial.rfc2217
 
+import importlib
+if(importlib.import_module('pyftdi')):
+    import pyftdi.serialext
+
+
 
 class Redirector(object):
     def __init__(self, serial_instance, socket, debug=False):
