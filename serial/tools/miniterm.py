@@ -43,8 +43,7 @@ def key_description(character):
 class ConsoleBase(object):
     """OS abstraction for console (input/output codec, no echo)"""
 
-    def __init__(self, miniterm):
-        self.miniterm = miniterm
+    def __init__(self):
         if sys.version_info >= (3, 0):
             self.byte_output = sys.stdout.buffer
         else:
@@ -125,12 +124,12 @@ if os.name == 'nt':  # noqa
             'O': '\x1b[F',  # END
             'R': '\x1b[2~',  # INSERT
             'S': '\x1b[3~',  # DELETE
-            'I': '\x1b[5~',  # PAGE UP
-            'Q': '\x1b[6~',  # PAGE DOWN
+            'I': '\x1b[5~',  # PGUP
+            'Q': '\x1b[6~',  # PGDN        
         }
-
-        def __init__(self, miniterm):
-            super(Console, self).__init__(miniterm)
+        
+        def __init__(self):
+            super(Console, self).__init__()
             self._saved_ocp = ctypes.windll.kernel32.GetConsoleOutputCP()
             self._saved_icp = ctypes.windll.kernel32.GetConsoleCP()
             ctypes.windll.kernel32.SetConsoleOutputCP(65001)
@@ -140,7 +139,7 @@ if os.name == 'nt':  # noqa
             if platform.release() == '10' and int(platform.version().split('.')[2]) > 10586:
                 ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
                 import ctypes.wintypes as wintypes
-                if not hasattr(wintypes, 'LPDWORD'):  # PY2
+                if not hasattr(wintypes, 'LPDWORD'): # PY2
                     wintypes.LPDWORD = ctypes.POINTER(wintypes.DWORD)
                 SetConsoleMode = ctypes.windll.kernel32.SetConsoleMode
                 GetConsoleMode = ctypes.windll.kernel32.GetConsoleMode
@@ -161,7 +160,7 @@ if os.name == 'nt':  # noqa
             ctypes.windll.kernel32.SetConsoleCP(self._saved_icp)
             try:
                 ctypes.windll.kernel32.SetConsoleMode(ctypes.windll.kernel32.GetStdHandle(-11), self._saved_cm)
-            except AttributeError:  # in case no _saved_cm
+            except AttributeError: # in case no _saved_cm
                 pass
 
         def getkey(self):
@@ -191,15 +190,13 @@ elif os.name == 'posix':
     import atexit
     import termios
     import fcntl
-    import signal
 
     class Console(ConsoleBase):
-        def __init__(self, miniterm):
-            super(Console, self).__init__(miniterm)
+        def __init__(self):
+            super(Console, self).__init__()
             self.fd = sys.stdin.fileno()
             self.old = termios.tcgetattr(self.fd)
             atexit.register(self.cleanup)
-            signal.signal(signal.SIGINT, self.sigint)
             if sys.version_info < (3, 0):
                 self.enc_stdin = codecs.getreader(sys.stdin.encoding)(sys.stdin)
             else:
@@ -223,11 +220,6 @@ elif os.name == 'posix':
 
         def cleanup(self):
             termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.old)
-
-        def sigint(self, sig, frame):
-            """signal handler for a clean exit on SIGINT"""
-            self.miniterm.stop()
-            self.cancel()
 
 else:
     raise NotImplementedError(
@@ -401,7 +393,7 @@ class Miniterm(object):
     """
 
     def __init__(self, serial_instance, echo=False, eol='crlf', filters=()):
-        self.console = Console(self)
+        self.console = Console()
         self.serial = serial_instance
         self.echo = echo
         self.raw = False
@@ -417,7 +409,6 @@ class Miniterm(object):
         self.receiver_thread = None
         self.rx_decoder = None
         self.tx_decoder = None
-        self.tx_encoder = None
 
     def _start_reader(self):
         """Start reader thread"""
@@ -1064,7 +1055,6 @@ def main(default_port=None, default_baudrate=9600, default_rts=None, default_dtr
         sys.stderr.write('\n--- exit ---\n')
     miniterm.join()
     miniterm.close()
-
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 if __name__ == '__main__':
