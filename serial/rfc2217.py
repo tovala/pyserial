@@ -467,7 +467,7 @@ class Serial(SerialBase):
         self.is_open = True
         self._thread = threading.Thread(target=self._telnet_read_loop)
         self._thread.daemon = True
-        self._thread.setName('pySerial RFC 2217 reader thread for {}'.format(self._port))
+        self._thread.name = f"pySerial RFC 2217 reader thread for {format(self._port)}"
         self._thread.start()
 
         try:    # must clean-up if open fails
