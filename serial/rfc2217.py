@@ -411,7 +411,7 @@ class Serial(SerialBase):
         self._threadwait = 7
         super(Serial, self).__init__(*args, **kwargs)  # must be last call in case of auto-open
 
-    def open(self, reset: bool = False):
+    def open(self):
         """\
         Open port with current settings. This may throw a SerialException
         if the port cannot be opened.
@@ -497,10 +497,6 @@ class Serial(SerialBase):
 
             # fine, go on, set RFC 2217 specific things
             self._reconfigure_port()
-            # all things set up get, now a clean start
-            if reset:
-                self.reset()
-
             self.reset_input_buffer()
             self.reset_output_buffer()
         except:
@@ -510,13 +506,11 @@ class Serial(SerialBase):
     def reset(self):
         if self.logger:
             self.logger.info("SENT SOFTWARE RESET")
-
         self.rfc2217_set_control(SET_CONTROL_SOFTWARE_RESET)
 
     def to_bootloader(self):
         if self.logger:
             self.logger.info("SENT BOOTLOADER RESET")
-
         self.rfc2217_set_control(SET_CONTROL_RESET_TO_BOOTLOADER)
 
     def _reconfigure_port(self):
