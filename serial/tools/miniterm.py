@@ -192,34 +192,46 @@ elif os.name == 'posix':
     import fcntl
 
     class Console(ConsoleBase):
-        def __init__(self):
+        def __init__(self, fd=sys.stdin.fileno()):
             super(Console, self).__init__()
-            self.fd = sys.stdin.fileno()
-            self.old = termios.tcgetattr(self.fd)
+            self.fd = fd
+            self.terminal = None
+            try:
+                self.old = termios.tcgetattr(self.fd)
+                self.terminal = self.fd
+            except:
+                print("NOT A TERMINAL. May be dumb.")
             atexit.register(self.cleanup)
-            if sys.version_info < (3, 0):
-                self.enc_stdin = codecs.getreader(sys.stdin.encoding)(sys.stdin)
-            else:
-                self.enc_stdin = sys.stdin
 
         def setup(self):
-            new = termios.tcgetattr(self.fd)
-            new[3] = new[3] & ~termios.ICANON & ~termios.ECHO & ~termios.ISIG
-            new[6][termios.VMIN] = 1
-            new[6][termios.VTIME] = 0
-            termios.tcsetattr(self.fd, termios.TCSANOW, new)
+            self.set_nonblocking()
 
         def getkey(self):
-            c = self.enc_stdin.read(1)
-            if c == unichr(0x7f):
+            b = os.read(self.fd, 1)
+            if b == b'':
+                return ""
+            if str(b) == unichr(0x7f):
                 c = unichr(8)    # map the BS key (which yields DEL) to backspace
-            return c
+            return str(b, 'utf-8')
 
         def cancel(self):
-            fcntl.ioctl(self.fd, termios.TIOCSTI, b'\0')
+            if self.terminal is not None:
+                fcntl.ioctl(self.terminal, termios.TIOCSTI, b'\0')
 
         def cleanup(self):
-            termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.old)
+            if self.terminal is not None:
+                termios.tcsetattr(self.terminal, termios.TCSAFLUSH, self.old)
+
+        def set_nonblocking(self):
+            if sys.platform != 'win32' and self.terminal is not None:
+                # Use non-blocking busy read to avoid using insecure TIOCSTI from console.cancel().
+                # TIOCSTI is not supported on kernels newer than 6.2.
+                import termios
+                new = termios.tcgetattr(self.terminal)
+                # new[6] - 'cc': a list of the tty special characters
+                new[6][termios.VMIN] = 0  # minimum bytes to read
+                new[6][termios.VTIME] = 2  # timer of 0.1 second granularity
+                termios.tcsetattr(self.terminal, termios.TCSANOW, new)
 
 else:
     raise NotImplementedError(

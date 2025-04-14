@@ -408,6 +408,7 @@ class Serial(SerialBase):
         self._rfc2217_port_settings = None
         self._rfc2217_options = None
         self._read_buffer = None
+        self._threadwait = 7
         super(Serial, self).__init__(*args, **kwargs)  # must be last call in case of auto-open
 
     def open(self, reset: bool = False):
@@ -573,10 +574,10 @@ class Serial(SerialBase):
                 # ignore errors.
                 pass
         if self._thread:
-            self._thread.join(7)  # XXX more than socket timeout
+            if self._threadwait:
+                self._thread.join(self._threadwait)  # XXX more than socket timeout
             self._thread = None
-            # in case of quick reconnects, give the server some time
-            time.sleep(0.3)
+
         self._socket = None
 
     def from_url(self, url):
