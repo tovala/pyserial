@@ -228,9 +228,10 @@ elif os.name == 'posix':
                 # TIOCSTI is not supported on kernels newer than 6.2.
                 import termios
                 new = termios.tcgetattr(self.terminal)
+                new[3] = new[3] & ~termios.ICANON & ~termios.ECHO & ~termios.ISIG
                 # new[6] - 'cc': a list of the tty special characters
-                new[6][termios.VMIN] = 0  # minimum bytes to read
-                new[6][termios.VTIME] = 2  # timer of 0.1 second granularity
+                new[6][termios.VMIN] = 1  # minimum bytes to read
+                new[6][termios.VTIME] = 0  # timer of 0.1 second granularity
                 termios.tcsetattr(self.terminal, termios.TCSANOW, new)
 
 else:
