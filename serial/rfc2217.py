@@ -182,6 +182,13 @@ SET_CONTROL_USE_DCD_FLOW_CONTROL = b'\x11'    # Use DCD Flow Control (outbound/b
 SET_CONTROL_USE_DTR_FLOW_CONTROL = b'\x12'    # Use DTR Flow Control (inbound)
 SET_CONTROL_USE_DSR_FLOW_CONTROL = b'\x13'    # Use DSR Flow Control (outbound/both)
 
+SET_CONTROL_SOFTWARE_RESET = b'\x14'       # Reset device
+SET_CONTROL_RESET_TO_BOOTLOADER = b'\x15'  # Reset to bootloader
+
+SET_CONTROL_REPEATABLE = [
+    SET_CONTROL_SOFTWARE_RESET,
+    SET_CONTROL_RESET_TO_BOOTLOADER
+]
 LINESTATE_MASK_TIMEOUT = 128        # Time-out Error
 LINESTATE_MASK_SHIFTREG_EMPTY = 64  # Transfer Shift Register Empty
 LINESTATE_MASK_TRANSREG_EMPTY = 32  # Transfer Holding Register Empty
@@ -330,7 +337,7 @@ class TelnetSubnegotiation(object):
         the client needs to know if the change is performed he has to check the
         state of this object.
         """
-        if value != self.value:
+        if value != self.value or value in SET_CONTROL_REPEATABLE:
             self.value = value
             self.state = REQUESTED
             self.connection.rfc2217_send_subnegotiation(self.option, self.value)
@@ -401,6 +408,7 @@ class Serial(SerialBase):
         self._rfc2217_port_settings = None
         self._rfc2217_options = None
         self._read_buffer = None
+        self._threadwait = 7
         super(Serial, self).__init__(*args, **kwargs)  # must be last call in case of auto-open
 
     def open(self):
@@ -489,16 +497,21 @@ class Serial(SerialBase):
 
             # fine, go on, set RFC 2217 specific things
             self._reconfigure_port()
-            # all things set up get, now a clean start
-            if not self._dsrdtr:
-                self._update_dtr_state()
-            if not self._rtscts:
-                self._update_rts_state()
             self.reset_input_buffer()
             self.reset_output_buffer()
         except:
             self.close()
             raise
+
+    def reset(self):
+        if self.logger:
+            self.logger.info("SENT SOFTWARE RESET")
+        self.rfc2217_set_control(SET_CONTROL_SOFTWARE_RESET)
+
+    def to_bootloader(self):
+        if self.logger:
+            self.logger.info("SENT BOOTLOADER RESET")
+        self.rfc2217_set_control(SET_CONTROL_RESET_TO_BOOTLOADER)
 
     def _reconfigure_port(self):
         """Set communication parameters on opened port."""
@@ -555,10 +568,10 @@ class Serial(SerialBase):
                 # ignore errors.
                 pass
         if self._thread:
-            self._thread.join(7)  # XXX more than socket timeout
+            if self._threadwait:
+                self._thread.join(self._threadwait)  # XXX more than socket timeout
             self._thread = None
-            # in case of quick reconnects, give the server some time
-            time.sleep(0.3)
+
         self._socket = None
 
     def from_url(self, url):
